@@ -1,40 +1,49 @@
-import {IncomingMessage,ServerResponse} from "http";
-import { URL } from "url";
-import { TLSSocket } from "tls";
+import {IncomingMessage,Server,ServerResponse} from "http";
+// import { URL } from "url";
+// import { TLSSocket } from "tls";
+import {Request , Response} from "express";
 
 
-export const isHttps = (req:IncomingMessage) : boolean =>{
-    return req.socket instanceof TLSSocket && req.socket.encrypted;
-} 
+// export const isHttps = (req:IncomingMessage) : boolean =>{
+//     return req.socket instanceof TLSSocket && req.socket.encrypted;
+// } ;
+
 
 export const redirectionHandler = (req:IncomingMessage , res:ServerResponse) =>{
+
     res.writeHead(302,{
         "Location":"https://localhost:5500"
     });
     res.end();
 }
 
-export const handler = async (req:IncomingMessage,res:ServerResponse)=>{
-    const protocol = isHttps(req) ? "https" :"http";
-    const parsedURL = new URL(req.url ?? "" , `${protocol}://${req.headers.host}`);
+export const notFoundHandler = (req:Request ,res:Response) =>{
+    res.sendStatus(404);
+}
 
-    if(req.method!=="GET" || parsedURL.pathname == '/favicon.ico'){
-        res.writeHead(404,"Not found");
-        res.end();
-        return ;
+export const newUrlHandler = (req:Request , res:Response) =>{
+    // res.writeHead(200,"OK");
+    // res.write("Hello, New URL");
+    // res.end();
+    res.send("Hello , New URL");
+}
+
+export const defaultHandler =  (req:Request,res:Response)=>{
+    // res.writeHead(200,"OK");
+    // const protocol = isHttps(req) ? "https" :"http";
+    // const parsedURL = new URL(req.url ?? "" , `${protocol}://${req.headers.host}`);
+
+    if(req.query.keyword){
+        res.send(`Hello, ${req.query.keyword}`);
+        // res.end();
+        // return ;
     }
     else{
-        res.writeHead(200,"OK");
-        if(!parsedURL.searchParams.has("keyword")){
-            res.write("Hello , HTTP");
+           res.send(`Hello , ${req.protocol.toLowerCase()}`);
         }
-        else{
-            res.write(`Hello , ${parsedURL.searchParams.get("keyword")}`);
-        }
-        res.end();
-        return;
+    //    res.end();
     }
-};
+
 // method follows to GET , POST , UPDATE , etc.
 
 
