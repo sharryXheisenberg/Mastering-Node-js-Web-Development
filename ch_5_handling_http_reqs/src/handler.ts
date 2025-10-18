@@ -25,7 +25,8 @@ export const newUrlHandler = (req:Request , res:Response) =>{
     // res.writeHead(200,"OK");
     // res.write("Hello, New URL");
     // res.end();
-    res.send("Hello , New URL");
+     const msg = req.params.message?? "(No Message)";
+    res.send(`Hello, ${msg}`);
 }
 
 export const defaultHandler =  (req:Request,res:Response)=>{
